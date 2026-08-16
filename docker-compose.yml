@@ -1,0 +1,176 @@
+name: vitacircle
+
+networks:
+  vitacircle:
+    name: vitacircle
+    driver: bridge
+
+volumes:
+  vitacircle_mongo:
+  vitacircle_redis:
+  vitacircle_minio:
+  vitacircle_api_storage:
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - vitacircle_mongo:/data/db
+    networks:
+      - vitacircle
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - vitacircle_redis:/data
+    networks:
+      - vitacircle
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: vitacircle
+      MINIO_ROOT_PASSWORD: vitacircle-dev
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - vitacircle_minio:/data
+    networks:
+      - vitacircle
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:9000/minio/health/live || wget -q -O /dev/null http://127.0.0.1:9000/minio/health/live || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_started
+    networks:
+      - vitacircle
+    restart: "no"
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        i=0
+        until mc alias set local http://minio:9000 vitacircle vitacircle-dev; do
+          i=$$((i+1))
+          if [ $$i -gt 30 ]; then echo "MinIO not ready" >&2; exit 1; fi
+          sleep 2
+        done
+        mc mb --ignore-existing local/vitacircle
+        echo MinIO bucket ready
+
+  ai:
+    build:
+      context: .
+      dockerfile: docker/ai.Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      AI_PROVIDER: ${AI_PROVIDER:-heuristic}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      AI_MODEL: ${AI_MODEL:-gpt-4o-mini}
+    ports:
+      - "8000:8000"
+    networks:
+      - vitacircle
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      MONGODB_URI: mongodb://mongo:27017/vitacircle
+      REDIS_URL: redis://redis:6379
+      AI_URL: http://ai:8000
+      APP_URL: http://localhost:3000
+      API_URL: http://localhost:4000
+      STORAGE_DRIVER: local
+      STORAGE_LOCAL_DIR: /app/storage
+    ports:
+      - "4000:4000"
+    volumes:
+      - vitacircle_api_storage:/app/storage
+    networks:
+      - vitacircle
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 25s
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:4000
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+      APP_URL: http://localhost:3000
+      API_URL: http://api:4000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+    ports:
+      - "3000:3000"
+    networks:
+      - vitacircle
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 20s

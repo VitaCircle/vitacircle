@@ -1,0 +1,38 @@
+{
+  "name": "vitacircle",
+  "private": true,
+  "version": "0.1.0",
+  "description": "VitaCircle — the operating system for creative job seekers",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "npm run dev -w @vitacircle/web",
+    "dev:api": "npm run dev -w @vitacircle/api",
+    "dev:ai": "npm run dev -w @vitacircle/ai",
+    "env:start": "node scripts/dev-env.mjs start",
+    "env:stop": "node scripts/dev-env.mjs stop",
+    "env:restart": "node scripts/dev-env.mjs restart",
+    "env:logs": "node scripts/dev-env.mjs logs",
+    "env:migrate": "node scripts/dev-env.mjs migrate",
+    "env:seed": "node scripts/dev-env.mjs seed",
+    "env:health": "node scripts/dev-env.mjs health",
+    "env:rebuild": "node scripts/dev-env.mjs rebuild",
+    "env:reset": "node scripts/dev-env.mjs reset",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.17.0",
+  "devDependencies": {
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  }
+}

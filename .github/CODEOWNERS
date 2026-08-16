@@ -1,0 +1,5 @@
+* @VitaCircle/core
+/apps/api/ @VitaCircle/backend
+/apps/ai/ @VitaCircle/backend
+/apps/web/ @VitaCircle/frontend
+/packages/ @VitaCircle/core

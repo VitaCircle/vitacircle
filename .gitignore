@@ -141,3 +141,23 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Python
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+*.pyc
+
+# VitaCircle local storage
+storage/uploads/**
+storage/exports/**
+!storage/uploads/.gitkeep
+!storage/exports/.gitkeep
+
+# Turbo
+.turbo/
+
+# OS
+.DS_Store
+Thumbs.db
