@@ -6,14 +6,16 @@ The operating system for creative job seekers — a media-first portfolio you ca
 
 Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) and Node.js 20+. Then from the repo root:
 
-```bash
-./start.sh
-```
-
-Windows (PowerShell):
+Windows (PowerShell) — use this, not `./start.sh`:
 
 ```powershell
 .\start.ps1
+```
+
+macOS / Linux / Git Bash:
+
+```bash
+./start.sh
 ```
 
 Same thing via Make or npm:
@@ -31,7 +33,7 @@ Open **http://localhost:3000** when the banner appears.
 
 | Command | What it does |
 |---------|----------------|
-| `./start.sh` / `.\start.ps1` / `make start` / `npm run env:start` | Build, start, wait, seed, print URLs |
+| `.\start.ps1` / `.\start.cmd` / `./start.sh` / `make start` / `npm run env:start` | Build, start, wait, seed, print URLs |
 | `make stop` / `npm run env:stop` | Stop containers (**volumes kept**) |
 | `make restart` / `npm run env:restart` | Stop then start without wiping data |
 | `make logs` / `npm run env:logs` | Follow container logs |

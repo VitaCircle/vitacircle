@@ -40,6 +40,15 @@ function compose(...args) {
 
 function ensureDocker() {
   const info = spawnSync("docker", ["info"], { stdio: "pipe", shell: process.platform === "win32" });
+  const stderr = info.stderr ? String(info.stderr) : "";
+  const missing =
+    (info.error && (info.error.code === "ENOENT" || /not recognized|not found/i.test(info.error.message))) ||
+    /not recognized|cannot find/i.test(stderr);
+  if (missing) {
+    fail(
+      "Docker is not installed. Install Docker Desktop from https://www.docker.com/products/docker-desktop/ then start it and retry. On Windows PowerShell use .\\start.ps1 (not ./start.sh).",
+    );
+  }
   if (info.status !== 0) {
     fail("Docker is not running. Start Docker Desktop, then retry.");
   }
