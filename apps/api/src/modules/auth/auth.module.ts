@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, Provider } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
@@ -10,6 +10,15 @@ import { Session, SessionSchema } from "../../schemas/session.schema";
 import { MailService } from "../../services/mail.service";
 import { GoogleStrategy } from "./google.strategy";
 import { LinkedInStrategy } from "./linkedin.strategy";
+import { GoogleOAuthGuard } from "./google-oauth.guard";
+import { LinkedInOAuthGuard } from "./linkedin-oauth.guard";
+
+function oauthProviders(): Provider[] {
+  const providers: Provider[] = [];
+  if (process.env.GOOGLE_CLIENT_ID) providers.push(GoogleStrategy);
+  if (process.env.LINKEDIN_CLIENT_ID) providers.push(LinkedInStrategy);
+  return providers;
+}
 
 @Module({
   imports: [
@@ -28,7 +37,7 @@ import { LinkedInStrategy } from "./linkedin.strategy";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, MailService, GoogleStrategy, LinkedInStrategy],
+  providers: [AuthService, MailService, GoogleOAuthGuard, LinkedInOAuthGuard, ...oauthProviders()],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

@@ -9,3 +9,4 @@ Create the **VitaCircle** GitHub Organization (already used by `github.com/VitaC
 3. Branch: `staging` auto-deploys API + web preview; `main` deploys production.
 4. CODEOWNERS for `apps/api`, `apps/ai`, `apps/web`.
 5. Weekly AI cost review after Phase 1 (issue template in `.github`).
+6. Keep development local-first: no production SMTP, storage, database, or LLM credentials should be required to run the MVP locally.

@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Patch, Post } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { IsEmail, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import {
   Notification,
   JobApplication,
@@ -17,6 +18,8 @@ import { CurrentUser, Public, Roles, type AuthUser } from "../../common/decorato
 import { createHash, randomBytes } from "crypto";
 import { EntitlementsService } from "../../services/entitlements.service";
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
+import { NewsletterSubscriber } from "../../schemas/newsletter.schema";
+import { MailService } from "../../services/mail.service";
 
 @Controller("notifications")
 export class NotificationsController {
@@ -227,5 +230,66 @@ export class ModerationPublicController {
   @Post("report")
   report(@Body() body: { portfolioId?: string; reason: string; details?: string }) {
     return this.mods.create(body);
+  }
+}
+
+class ContactDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(120)
+  name!: string;
+
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(200)
+  subject!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(5000)
+  message!: string;
+}
+
+class NewsletterDto {
+  @IsEmail()
+  email!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  source?: string;
+}
+
+@Controller("platform")
+export class PlatformPublicController {
+  constructor(
+    @InjectModel(NewsletterSubscriber.name) private newsletter: Model<NewsletterSubscriber>,
+    private mail: MailService,
+  ) {}
+
+  @Public()
+  @Post("contact")
+  async contact(@Body() body: ContactDto) {
+    const to = process.env.EMAIL_FROM?.match(/<([^>]+)>/)?.[1] || "hello@vitacircle.app";
+    await this.mail.send(
+      to,
+      `[Contact] ${body.subject}`,
+      `From: ${body.name} <${body.email}>\n\n${body.message}`,
+    );
+    return { ok: true };
+  }
+
+  @Public()
+  @Post("newsletter")
+  async subscribe(@Body() body: NewsletterDto) {
+    await this.newsletter.findOneAndUpdate(
+      { email: body.email.toLowerCase() },
+      { email: body.email.toLowerCase() },
+      { upsert: true, new: true },
+    );
+    return { ok: true };
   }
 }

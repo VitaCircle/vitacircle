@@ -11,7 +11,12 @@ export type Me = {
   plan: string;
   emailVerified: boolean;
   displayName?: string;
-  onboarding?: { completed?: boolean; vertical?: string; targetRole?: string };
+  onboarding?: { completed?: boolean; vertical?: string; targetRole?: string; intent?: string };
+  consents?: {
+    aiTrainingOptIn?: boolean;
+    doNotSendToLlm?: boolean;
+    talentDirectory?: boolean;
+  };
 };
 
 const Ctx = createContext<{

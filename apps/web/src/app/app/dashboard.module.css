@@ -1,0 +1,348 @@
+.page {
+  padding: 32px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+.heroMain,
+.heroSide,
+.panel,
+.actionCard,
+.portfolioCard {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow-card);
+}
+
+.heroMain {
+  position: relative;
+  overflow: hidden;
+  padding: 36px;
+  color: #fff;
+  background:
+    linear-gradient(120deg, rgba(16, 24, 32, 0.94), rgba(23, 92, 98, 0.9)),
+    var(--accent);
+}
+
+.heroMain::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transform: rotate(18deg);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #bff2ee;
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0;
+  font-size: 44px;
+  line-height: 1.05;
+}
+
+.lead {
+  position: relative;
+  z-index: 1;
+  max-width: 660px;
+  margin: 18px 0 28px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.heroActions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.heroGhost {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.heroGhost:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+}
+
+.heroSide {
+  padding: 24px;
+}
+
+.scoreValue {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.progressTrack {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
+}
+
+.panel {
+  padding: 24px;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 24px;
+}
+
+.createRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.verticalSelect {
+  min-height: var(--control-height);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 8px 12px;
+  color: var(--ink);
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.actionCard {
+  min-height: 132px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+  color: inherit;
+  text-align: left;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+button.actionCard {
+  cursor: pointer;
+}
+
+.actionCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(23, 92, 98, 0.28);
+  box-shadow: 0 18px 44px rgba(16, 24, 32, 0.12);
+}
+
+.actionTitle {
+  margin: 0;
+  font-size: 17px;
+}
+
+.actionBody {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.statusList {
+  display: grid;
+  gap: 10px;
+}
+
+.statusItem {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.statusDot {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.statusDone {
+  background: rgba(37, 111, 74, 0.12);
+  color: var(--ok);
+}
+
+.statusLabel {
+  margin: 0;
+  font-weight: 700;
+}
+
+.statusHint {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.portfolioList {
+  display: grid;
+  gap: 12px;
+}
+
+.portfolioCard {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  padding: 18px;
+}
+
+.portfolioTitle {
+  margin: 0;
+  font-size: 19px;
+}
+
+.portfolioTitleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--surface-raised);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+.status_published {
+  background: rgba(37, 111, 74, 0.12);
+  color: var(--ok);
+  border-color: transparent;
+}
+
+.status_draft,
+.status_unpublished {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.meta {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.empty {
+  padding: 24px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+@media (max-width: 1050px) {
+  .hero,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 18px;
+  }
+
+  .heroMain {
+    padding: 26px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .actionsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .portfolioCard {
+    grid-template-columns: 1fr;
+  }
+
+  .quickActions,
+  .heroActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .quickActions a,
+  .quickActions button,
+  .heroActions a,
+  .heroActions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

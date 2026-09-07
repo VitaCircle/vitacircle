@@ -9,6 +9,7 @@ import {
   PublicApiController,
   CollabController,
   ModerationPublicController,
+  PlatformPublicController,
 } from "./platform.controllers";
 import {
   Notification,
@@ -30,7 +31,9 @@ import {
 } from "../../schemas/ops.schema";
 import { Portfolio, PortfolioSchema } from "../../schemas/portfolio.schema";
 import { User, UserSchema } from "../../schemas/user.schema";
+import { NewsletterSubscriber, NewsletterSubscriberSchema } from "../../schemas/newsletter.schema";
 import { EntitlementsService } from "../../services/entitlements.service";
+import { MailService } from "../../services/mail.service";
 
 @Module({
   imports: [
@@ -45,6 +48,7 @@ import { EntitlementsService } from "../../services/entitlements.service";
       { name: ModerationReport.name, schema: ModerationReportSchema },
       { name: Portfolio.name, schema: PortfolioSchema },
       { name: User.name, schema: UserSchema },
+      { name: NewsletterSubscriber.name, schema: NewsletterSubscriberSchema },
     ]),
   ],
   controllers: [
@@ -56,7 +60,8 @@ import { EntitlementsService } from "../../services/entitlements.service";
     PublicApiController,
     CollabController,
     ModerationPublicController,
+    PlatformPublicController,
   ],
-  providers: [EntitlementsService],
+  providers: [EntitlementsService, MailService],
 })
 export class PlatformModule {}

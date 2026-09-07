@@ -12,7 +12,10 @@ COPY apps/ai/package.json apps/ai/
 COPY packages/shared/package.json packages/shared/
 COPY packages/design-tokens/package.json packages/design-tokens/
 
-RUN npm ci
+RUN npm config set fetch-retries 5 \
+  && npm config set fetch-retry-mintimeout 20000 \
+  && npm config set fetch-retry-maxtimeout 120000 \
+  && npm ci
 
 COPY packages/shared packages/shared
 COPY packages/design-tokens packages/design-tokens
@@ -29,20 +32,9 @@ ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 RUN apk add --no-cache wget
 
-COPY package.json package-lock.json ./
-COPY apps/api/package.json apps/api/
-COPY apps/web/package.json apps/web/
-COPY apps/ai/package.json apps/ai/
-COPY packages/shared/package.json packages/shared/
-COPY packages/design-tokens/package.json packages/design-tokens/
-RUN npm ci --omit=dev
+COPY --from=build /app/apps/web/.next/standalone ./
+COPY --from=build /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=build /app/apps/web/public ./apps/web/public
 
-COPY --from=build /app/packages/shared packages/shared
-COPY --from=build /app/apps/web/.next apps/web/.next
-COPY --from=build /app/apps/web/public apps/web/public
-COPY --from=build /app/apps/web/package.json apps/web/package.json
-COPY --from=build /app/apps/web/next.config.mjs apps/web/next.config.mjs
-
-WORKDIR /app/apps/web
 EXPOSE 3000
-CMD ["npx", "next", "start", "-H", "0.0.0.0", "-p", "3000"]
+CMD ["node", "apps/web/server.js"]

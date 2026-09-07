@@ -7,8 +7,8 @@ import { ConfigService } from "@nestjs/config";
 export class LinkedInStrategy extends PassportStrategy(Strategy, "linkedin") {
   constructor(config: ConfigService) {
     super({
-      clientID: config.get("LINKEDIN_CLIENT_ID") || "disabled",
-      clientSecret: config.get("LINKEDIN_CLIENT_SECRET") || "disabled",
+      clientID: config.get("LINKEDIN_CLIENT_ID") || "",
+      clientSecret: config.get("LINKEDIN_CLIENT_SECRET") || "",
       callbackURL: config.get("LINKEDIN_CALLBACK_URL") || "http://localhost:4000/auth/linkedin/callback",
       scope: ["r_emailaddress", "r_liteprofile"],
     });

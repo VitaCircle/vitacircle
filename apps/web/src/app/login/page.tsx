@@ -1,20 +1,26 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { api, setToken } from "@/lib/api";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { SiteHeader } from "@/components/layout/SiteHeader";
+import { useRouter } from "next/navigation";
+import { api, setToken } from "@/lib/api";
+import { AuthShell } from "@/components/auth/AuthShell";
+import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
+import { landingCopy } from "@/components/landing/landingCopy";
+import styles from "@/components/auth/auth.module.css";
 
 export default function LoginPage() {
+  const c = landingCopy.auth.login;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
       const r = await api<{ accessToken: string }>("/auth/login", {
         method: "POST",
@@ -22,37 +28,56 @@ export default function LoginPage() {
       });
       setToken(r.accessToken);
       router.push("/app");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Invalid credentials. Please try again.");
+    } catch {
+      setError("Invalid credentials. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <>
-      <SiteHeader />
-      <main className="container" style={{ maxWidth: 440, paddingTop: 64 }}>
-        <h1>Log in</h1>
-        <form onSubmit={onSubmit}>
-          <div className="field">
-            <label>Email</label>
-            <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div className="field">
-            <label>Password</label>
-            <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          {error ? <p style={{ color: "var(--danger)" }}>{error}</p> : null}
-          <button className="btn" type="submit">Continue</button>
-        </form>
-        <p className="muted" style={{ marginTop: 16 }}>
-          <Link href="/forgot">Forgot password</Link> · <Link href="/register">Create account</Link>
-        </p>
-        <p className="muted">
-          <a href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/auth/google`}>Continue with Google</a>
+    <AuthShell
+      title={c.title}
+      subtitle={c.subtitle}
+      trust={c.trust}
+      headerLink={{ href: "/register", label: "Create account" }}
+      footer={
+        <>
+          <Link href="/forgot">Forgot password</Link>
           {" · "}
-          <a href={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"}/auth/linkedin`}>LinkedIn</a>
-        </p>
-      </main>
-    </>
+          <Link href="/register">Create account</Link>
+        </>
+      }
+    >
+      <SocialAuthButtons />
+      <form onSubmit={onSubmit}>
+        <div className="field lg">
+          <label htmlFor="login-email">Email</label>
+          <input
+            id="login-email"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="field lg">
+          <label htmlFor="login-password">Password</label>
+          <input
+            id="login-password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        {error ? <p className={styles.error}>{error}</p> : null}
+        <button className="btn accent lg block" type="submit" disabled={loading}>
+          {loading ? "Signing in…" : "Log in"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

@@ -19,7 +19,7 @@ export default function MediaPage() {
     const fd = new FormData();
     fd.append("file", file);
     const res = await api<Asset & { message: string }>("/assets/upload", { method: "POST", body: fd });
-    setToast(res.message);
+    setToast(res.message || "File uploaded successfully.");
     setItems([res, ...items]);
   }
 
@@ -27,7 +27,7 @@ export default function MediaPage() {
     <AppShell>
       <main style={{ padding: 32 }}>
         <h1>Media library</h1>
-        <label className="btn">
+        <label className="btn accent">
           Upload
           <input type="file" accept="image/png,image/jpeg,audio/mpeg,.mp3,video/mp4" hidden onChange={(e) => e.target.files && upload(e.target.files[0])} />
         </label>

@@ -56,6 +56,7 @@ Open **http://localhost:3000** when the banner appears.
 | AI docs | http://localhost:8000/docs |
 | Admin (in-app) | http://localhost:3000/app/admin |
 | MinIO console | http://localhost:9001 (`vitacircle` / `vitacircle-dev`) |
+| Local email inbox | http://localhost:8025 |
 
 Dev admin email/password come from `.env` (`BOOTSTRAP_ADMIN_EMAIL` / `BOOTSTRAP_ADMIN_PASSWORD`).
 
@@ -68,7 +69,7 @@ Use this only if you are iterating on host Node/Python. The one-command path abo
 3. `npm install`
 4. `npm run dev:api` and `npm run dev:web`
 
-Without Python or an LLM key, the API uses a heuristic role-fit scorer.
+Without Python or an LLM key, the API uses a heuristic role-fit scorer. Email is local-first through MailHog; verification and reset emails appear at **http://localhost:8025**.
 
 ## Monorepo
 

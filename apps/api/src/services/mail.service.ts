@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import nodemailer from "nodemailer";
 
 @Injectable()
 export class MailService {
@@ -13,6 +14,24 @@ export class MailService {
       this.log.log(`[dev email] to=${to} subject=${subject}\n${body}`);
       return;
     }
-    this.log.log(`Would send SMTP email to ${to}: ${subject}`);
+    const port = Number(this.config.get("SMTP_PORT") || 1025);
+    const user = this.config.get("SMTP_USER");
+    const pass = this.config.get("SMTP_PASS");
+    const secure = this.config.get("SMTP_SECURE") === "true";
+    const from = this.config.get("EMAIL_FROM") || "VitaCircle <noreply@vitacircle.local>";
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: user && pass ? { user, pass } : undefined,
+    });
+
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      text: body,
+    });
+    this.log.log(`Sent email to ${to}: ${subject}`);
   }
 }

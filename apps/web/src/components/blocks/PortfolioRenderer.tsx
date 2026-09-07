@@ -159,7 +159,7 @@ export function PortfolioRenderer({
       style={{
         background: theme?.colorBg || "var(--bg)",
         color: theme?.colorInk || "var(--ink)",
-        ["--accent" as string]: theme?.colorAccent || "#C45C26",
+        ["--accent" as string]: theme?.colorAccent || "#175c62",
         minHeight: "100%",
         padding: "0 24px 64px",
       }}

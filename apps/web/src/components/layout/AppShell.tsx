@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import styles from "./AppShell.module.css";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
+  const pathname = usePathname();
   if (loading) return <p className="container">Loading…</p>;
   if (!user) {
     return (
@@ -13,24 +16,56 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </main>
     );
   }
+  const links = [
+    { href: "/app", label: "Dashboard" },
+    { href: "/app/profile", label: "Profile" },
+    { href: "/app/media", label: "Media" },
+    { href: "/app/import", label: "Import" },
+    { href: "/app/applications", label: "Applications" },
+    { href: "/app/billing", label: "Billing" },
+    { href: "/app/settings", label: "Settings" },
+    { href: "/app/org", label: "Organization" },
+  ];
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "200px 1fr", minHeight: "100vh" }}>
-      <aside style={{ borderRight: "1px solid var(--line)", padding: 20 }}>
-        <Link href="/" className="display" style={{ fontSize: 20 }}>VitaCircle</Link>
-        <nav style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24, fontSize: 14 }}>
-          <Link href="/app">Portfolios</Link>
-          <Link href="/app/media">Media</Link>
-          <Link href="/app/import">Import</Link>
-          <Link href="/app/applications">Applications</Link>
-          <Link href="/app/billing">Billing</Link>
-          <Link href="/app/settings">Settings</Link>
-          <Link href="/app/org">Organization</Link>
-          {user.role === "admin" ? <Link href="/app/admin">Admin</Link> : null}
-          <button className="btn ghost" onClick={() => logout()}>Log out</button>
+    <div className={styles.shell}>
+      <aside className={styles.sidebar}>
+        <div className={styles.mobileBar}>
+          <Link href="/" className="display" style={{ fontSize: 20 }}>VitaCircle</Link>
+          <span className="muted" style={{ fontSize: 13 }}>{user.plan.toUpperCase()}</span>
+        </div>
+        <Link href="/" className={`display ${styles.brand}`}>VitaCircle</Link>
+        <nav className={styles.nav}>
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${styles.navLink} ${
+                link.href === "/app"
+                  ? pathname === "/app"
+                    ? styles.active
+                    : ""
+                  : pathname === link.href || pathname.startsWith(link.href + "/")
+                    ? styles.active
+                    : ""
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+          {user.role === "admin" ? (
+            <Link href="/app/admin" className={`${styles.navLink} ${pathname === "/app/admin" ? styles.active : ""}`}>
+              Admin
+            </Link>
+          ) : null}
         </nav>
-        <p className="muted" style={{ marginTop: 24, fontSize: 12 }}>{user.plan.toUpperCase()} · {user.username}</p>
+        <div className={styles.userCard}>
+          <p className={styles.userName}>{user.displayName || user.username}</p>
+          <p className={styles.userMeta}>{user.plan.toUpperCase()} plan</p>
+          <Link href="/app/profile" className={styles.profileLink}>Edit profile</Link>
+        </div>
+        <button type="button" className={`btn ghost ${styles.logout}`} onClick={() => logout()}>Log out</button>
       </aside>
-      <div>{children}</div>
+      <div className={styles.content}>{children}</div>
     </div>
   );
 }

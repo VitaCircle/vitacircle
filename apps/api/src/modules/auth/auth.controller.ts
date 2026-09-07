@@ -12,8 +12,9 @@ import { AuthService } from "./auth.service";
 import { Public } from "../../common/decorators/auth";
 import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
 import { Request, Response } from "express";
-import { AuthGuard } from "@nestjs/passport";
 import { ConfigService } from "@nestjs/config";
+import { GoogleOAuthGuard } from "./google-oauth.guard";
+import { LinkedInOAuthGuard } from "./linkedin-oauth.guard";
 
 class RegisterDto {
   @IsEmail()
@@ -100,15 +101,24 @@ export class AuthController {
   }
 
   @Public()
+  @Get("providers")
+  providers() {
+    return {
+      google: !!this.config.get("GOOGLE_CLIENT_ID"),
+      linkedin: !!this.config.get("LINKEDIN_CLIENT_ID"),
+    };
+  }
+
+  @Public()
   @Get("google")
-  @UseGuards(AuthGuard("google"))
+  @UseGuards(GoogleOAuthGuard)
   google() {
     return;
   }
 
   @Public()
   @Get("google/callback")
-  @UseGuards(AuthGuard("google"))
+  @UseGuards(GoogleOAuthGuard)
   async googleCb(@Req() req: Request, @Res() res: Response) {
     const tokens = await this.auth.oauthUpsert("google", req.user as { id: string; email: string; name?: string });
     this.auth.setRefreshCookie(res, tokens.refreshToken);
@@ -118,14 +128,14 @@ export class AuthController {
 
   @Public()
   @Get("linkedin")
-  @UseGuards(AuthGuard("linkedin"))
+  @UseGuards(LinkedInOAuthGuard)
   linkedin() {
     return;
   }
 
   @Public()
   @Get("linkedin/callback")
-  @UseGuards(AuthGuard("linkedin"))
+  @UseGuards(LinkedInOAuthGuard)
   async linkedinCb(@Req() req: Request, @Res() res: Response) {
     const tokens = await this.auth.oauthUpsert("linkedin", req.user as { id: string; email: string; name?: string });
     this.auth.setRefreshCookie(res, tokens.refreshToken);
